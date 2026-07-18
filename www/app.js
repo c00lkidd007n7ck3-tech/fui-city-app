@@ -80,6 +80,28 @@ let tiempoAnterior = 0;
 let solicitudActiva = null;
 let radarBloqueadoPorNodos = false;
 
+function toggleNodos() {
+    const panel = document.getElementById("nodos-container");
+    const boton = document.getElementById("radar-toggle-btn");
+    panel.classList.toggle("hidden");
+    if (panel.classList.contains("hidden")) {
+        boton.innerText = "[ VER COMERCIOS ]";
+    } else {
+        boton.innerText = "[ OCULTAR ]";
+    }
+}
+
+function toggleCategorias() {
+    const contenedor = document.getElementById("categorias-secundarias");
+    const boton = document.getElementById("expand-categories-btn");
+    contenedor.classList.toggle("hidden");
+    if (contenedor.classList.contains("hidden")) {
+        boton.innerText = "[ OTRAS CATEGORÍAS ▼ ]";
+    } else {
+        boton.innerText = "[ VOLVER ▲ ]";
+    }
+}
+
 /** Rota el bearing con una velocidad estable en cualquier tasa de refresco. */
 function rotarRadar(tiempoActual) {
     if (!radarActivo) return;
@@ -201,7 +223,11 @@ function crearNombreTactico(nombre, rubro) {
     const prefijos = {
         carniceria: "MEAT_NODE",
         verduleria: "GREEN_NODE",
-        almacen: "SUPPLY_NODE"
+        almacen: "SUPPLY_NODE",
+        restaurante: "FOOD_NODE",
+        kiosco: "KIOSK_NODE",
+        ferreteria: "HARDWARE_NODE",
+        jugueteria: "TOY_NODE"
     };
 
     return `${prefijos[rubro]}: ${nombre.toLocaleUpperCase("es")}`;
@@ -342,24 +368,31 @@ function crearMarcadorYEntrada(comercio, lista) {
 
 function obtenerValoresOSM(rubroFiltro) {
     const equivalencias = {
-        carniceria: ["butcher"],
-        verduleria: ["greengrocer"],
-        almacen: ["convenience", "supermarket"]
+        carniceria: [{ clave: "shop", valor: "butcher" }],
+        verduleria: [{ clave: "shop", valor: "greengrocer" }],
+        almacen: [
+            { clave: "shop", valor: "convenience" },
+            { clave: "shop", valor: "supermarket" }
+        ],
+        restaurante: [{ clave: "amenity", valor: "restaurant" }],
+        kiosco: [{ clave: "shop", valor: "kiosk" }],
+        ferreteria: [{ clave: "shop", valor: "hardware" }],
+        jugueteria: [{ clave: "shop", valor: "toys" }]
     };
 
     return equivalencias[rubroFiltro] || null;
 }
 
-function construirConsultaOverpass(valoresShop, bounds) {
+function construirConsultaOverpass(filtrosOSM, bounds) {
     /* Overpass exige estrictamente el orden: sur, oeste, norte, este. */
     const sur = bounds.getSouth();
     const oeste = bounds.getWest();
     const norte = bounds.getNorth();
     const este = bounds.getEast();
 
-    const selectores = valoresShop
-        .map((valor) =>
-            'node["shop"="' + valor + '"](' +
+    const selectores = filtrosOSM
+        .map((filtro) =>
+            'node["' + filtro.clave + '"="' + filtro.valor + '"](' +
             sur + ',' + oeste + ',' + norte + ',' + este + ');'
         )
         .join("");
@@ -413,8 +446,8 @@ function primeraRespuestaValida(promesas) {
  * tengan nombre. Una solicitud nueva cancela cualquier rastrillaje anterior.
  */
 async function ejecutarRastrillaje(rubroFiltro) {
-    const valoresShop = obtenerValoresOSM(rubroFiltro);
-    if (!valoresShop) {
+    const filtrosOSM = obtenerValoresOSM(rubroFiltro);
+    if (!filtrosOSM) {
         console.warn(`[TACTICAL_RADAR] Rubro no soportado: ${rubroFiltro}`);
         informarEnHUD("[ ERROR ] RUBRO_NO_RECONOCIDO");
         return;
@@ -437,7 +470,7 @@ async function ejecutarRastrillaje(rubroFiltro) {
     }
 
     const bounds = map.getBounds();
-    const query = construirConsultaOverpass(valoresShop, bounds);
+    const query = construirConsultaOverpass(filtrosOSM, bounds);
     let tiempoAgotado = false;
 
     /* Feedback adicional si la red tarda, sin esperar al timeout definitivo. */

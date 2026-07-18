@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#030000">
     <title>Berisso Tactical Radar</title>
 
@@ -30,8 +30,12 @@
             </div>
         </header>
 
+        <button type="button" id="radar-toggle-btn" onclick="toggleNodos()">
+            [ VER COMERCIOS ]
+        </button>
+
         <!-- HUD lateral: JavaScript inyecta aquí los resultados del escaneo. -->
-        <aside class="fui-sidebar" id="sidebar-nodos" aria-label="Nodos comerciales detectados">
+        <aside class="fui-sidebar nodos-panel hidden" id="nodos-container" aria-label="Nodos comerciales detectados">
             <div class="sidebar-heading">[ NODOS_DETECTADOS ]</div>
             <div id="lista-comercios" aria-live="polite"></div>
         </aside>
@@ -41,7 +45,7 @@
                 <span>[ RASTRILLAJE_INFORMÁTICO ]</span>
                 <span>AV_MONTEVIDEO // BERISSO</span>
             </div>
-            <div class="fui-buttons">
+            <div class="fui-buttons categorias-principales">
                 <button type="button" onclick="ejecutarRastrillaje('carniceria')">
                     <span>01</span> CARNICERÍAS
                 </button>
@@ -52,10 +56,29 @@
                     <span>03</span> ALMACENES
                 </button>
             </div>
+
+            <button type="button" id="expand-categories-btn" onclick="toggleCategorias()">
+                [ OTRAS CATEGORÍAS ▼ ]
+            </button>
+
+            <div id="categorias-secundarias" class="fui-buttons categorias-secundarias hidden">
+                <button type="button" onclick="ejecutarRastrillaje('restaurante')">
+                    <span>04</span> RESTAURANTES
+                </button>
+                <button type="button" onclick="ejecutarRastrillaje('kiosco')">
+                    <span>05</span> KIOSCOS
+                </button>
+                <button type="button" onclick="ejecutarRastrillaje('ferreteria')">
+                    <span>06</span> FERRETERÍAS
+                </button>
+                <button type="button" onclick="ejecutarRastrillaje('jugueteria')">
+                    <span>07</span> JUGUETERÍAS
+                </button>
+            </div>
         </section>
     </div>
 
     <script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
-    <script src="app.js?v=20260718-3"></script>
+    <script src="app.js?v=20260718-5"></script>
 </body>
 </html>
