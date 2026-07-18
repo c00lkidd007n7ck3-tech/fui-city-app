@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUI City Scanner</title>
+    <!-- CSS del mapa interactivo -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="map"></div>
+
+    <div class="fui-overlay">
+        <header class="fui-header">
+            <div class="fui-title">CITY_SCANNER_v1.0.0</div>
+            <div class="fui-status">SYSTEM: <span class="pulse">ONLINE</span></div>
+        </header>
+
+        <main class="fui-panel">
+            <h3>[ FILTRAR_RUBRO ]</h3>
+            <div class="fui-buttons">
+                <button onclick="filtrar('gastronomia')">GASTRONOMIA</button>
+                <button onclick="filtrar('salud')">SALUD</button>
+                <button onclick="filtrar('comercios')">COMERCIOS</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
