@@ -4,21 +4,38 @@
     padding: 0;
     font-family: 'Courier New', Courier, monospace;
 }
+
 body, html {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background-color: #000;
+    background-color: #030000;
 }
-/* Cambiamos el color de OpenStreetMap para que sea una interfaz oscura de ciencia ficción */
+
+/* El mapa 3D con colores invertidos hacia rojo de visión nocturna */
 #map {
     position: absolute;
     top: 0;
     bottom: 0;
     width: 100%;
     z-index: 1;
-    filter: invert(1) hue-rotate(180deg) saturate(1.5) brightness(0.5);
+    filter: invert(1) hue-rotate(170deg) saturate(2) brightness(0.6) contrast(1.2);
 }
+
+/* Línea horizontal de escaneo de radar clásico */
+.radar-scan {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(255,0,50,0) 96%, rgba(255,0,50,0.15) 98%, rgba(255,0,50,0.3) 100%);
+    background-size: 100% 4px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Interfaz superior */
 .fui-overlay {
     position: absolute;
     top: 0;
@@ -30,46 +47,62 @@ body, html {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 15px;
+    padding: 20px;
 }
+
 .fui-header, .fui-panel {
     pointer-events: auto;
-    background: rgba(10, 0, 0, 0.9);
-    border: 2px solid #ff0033;
-    box-shadow: 0 0 15px rgba(255, 0, 51, 0.4);
+    background: rgba(6, 0, 0, 0.85);
+    border: 1px solid #ff0033;
+    box-shadow: inset 0 0 15px rgba(255, 0, 51, 0.2), 0 0 20px rgba(255, 0, 51, 0.3);
     color: #ff3355;
-    padding: 12px;
+    padding: 15px;
+    clip-path: polygon(0 0, 95% 0, 100% 30%, 100% 100%, 5% 100%, 0 70%); /* Esquinas cortadas estilo sci-fi */
 }
+
 .fui-header {
     display: flex;
     justify-content: space-between;
-    border-bottom: 4px double #ff0033;
+    border-bottom: 3px double #ff0033;
 }
+
 .pulse {
-    animation: blink 1.5s infinite;
+    animation: blink 1s infinite alternate;
     color: #ff0033;
     font-weight: bold;
 }
-@keyframes blink { 50% { opacity: 0.2; } }
-.fui-panel h3 {
-    font-size: 13px;
-    margin-bottom: 8px;
-    letter-spacing: 2px;
+
+@keyframes blink {
+    0% { opacity: 0.2; }
+    100% { opacity: 1; text-shadow: 0 0 8px #ff0033; }
 }
-.fui-buttons { display: flex; gap: 8px; }
+
+.fui-panel h3 {
+    font-size: 12px;
+    margin-bottom: 12px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 5px rgba(255, 51, 85, 0.5);
+}
+
+.fui-buttons {
+    display: flex;
+    gap: 10px;
+}
+
 .fui-buttons button {
     flex: 1;
-    background: transparent;
-    border: 1px solid #ff0033;
+    background: rgba(20, 0, 0, 0.5);
+    border: 1px solid #ff3355;
     color: #ff3355;
-    padding: 10px;
+    padding: 12px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 11px;
-    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
 }
+
 .fui-buttons button:hover {
     background: #ff0033;
     color: #000;
-    box-shadow: 0 0 10px #ff0033;
+    box-shadow: 0 0 15px #ff0033;
 }

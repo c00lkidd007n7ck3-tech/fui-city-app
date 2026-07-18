@@ -3,31 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FUI City Scanner</title>
-    <!-- CSS del mapa interactivo -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <title>FUI City Tactical Radar</title>
+
+    <!-- Librería para Mapas Vectoriales en 3D -->
+    <link href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="map"></div>
 
+    <!-- El canvas del radar 3D -->
+    <div id="map"></div>
+    <div class="radar-scan"></div>
+
+    <!-- Interfaz Holográfica FUI -->
     <div class="fui-overlay">
         <header class="fui-header">
-            <div class="fui-title">CITY_SCANNER_v1.0.0</div>
-            <div class="fui-status">SYSTEM: <span class="pulse">ONLINE</span></div>
+            <div class="fui-title">TACTICAL_RADAR_v3.0.4</div>
+            <div class="fui-status">ANG_PITCH: <span id="pitch-val">60°</span> | <span class="pulse">SCAN_ACTIVE</span></div>
         </header>
 
         <main class="fui-panel">
-            <h3>[ FILTRAR_RUBRO ]</h3>
+            <h3>[ FILTRAR_NODOS_URBANOS ]</h3>
             <div class="fui-buttons">
                 <button onclick="filtrar('gastronomia')">GASTRONOMIA</button>
-                <button onclick="filtrar('salud')">SALUD</button>
-                <button onclick="filtrar('comercios')">COMERCIOS</button>
+                <button onclick="filtrar('salud')">MEDICINA</button>
+                <button onclick="filtrar('comercios')">LOGISTICA</button>
             </div>
         </main>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Script de MapLibre GL -->
+    <script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
