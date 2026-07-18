@@ -1,0 +1,9 @@
+{
+  "appId": "com.c00lkidd.fuicity",
+  "appName": "Berisso Tactical Radar",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "allowNavigation": ["overpass-api.de", "overpass.kumi.systems", "basemaps.cartocdn.com", "unpkg.com"]
+  }
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#030000">
+    <title>Berisso Tactical Radar</title>
+
+    <!-- MapLibre GL JS 4.5.0: motor cartográfico vectorial WebGL. -->
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Superficie cartográfica interactiva. -->
+    <div id="map" aria-label="Mapa táctico tridimensional de Berisso"></div>
+
+    <!-- Trama CRT puramente decorativa: nunca intercepta eventos. -->
+    <div class="radar-scan" aria-hidden="true"></div>
+
+    <!-- La capa madre deja pasar los gestos; sólo sus paneles son interactivos. -->
+    <div class="fui-overlay">
+        <header class="fui-header">
+            <div>
+                <p class="eyebrow">URBAN INTELLIGENCE // SECTOR_BSO</p>
+                <h1>BERISSO_TACTICAL_RADAR_v4.0</h1>
+            </div>
+            <div class="system-state">
+                SYS_STATUS<br>
+                <span class="blink">● SCAN_ACTIVE</span>
+            </div>
+        </header>
+
+        <!-- HUD lateral: JavaScript inyecta aquí los resultados del escaneo. -->
+        <aside class="fui-sidebar" id="sidebar-nodos" aria-label="Nodos comerciales detectados">
+            <div class="sidebar-heading">[ NODOS_DETECTADOS ]</div>
+            <div id="lista-comercios" aria-live="polite"></div>
+        </aside>
+
+        <section class="fui-panel" aria-label="Controles de rastrillaje informático">
+            <div class="panel-heading">
+                <span>[ RASTRILLAJE_INFORMÁTICO ]</span>
+                <span>AV_MONTEVIDEO // BERISSO</span>
+            </div>
+            <div class="fui-buttons">
+                <button type="button" onclick="ejecutarRastrillaje('carniceria')">
+                    <span>01</span> CARNICERÍAS
+                </button>
+                <button type="button" onclick="ejecutarRastrillaje('verduleria')">
+                    <span>02</span> VERDULERÍAS
+                </button>
+                <button type="button" onclick="ejecutarRastrillaje('almacen')">
+                    <span>03</span> ALMACENES
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
+    <script src="app.js?v=20260718-3"></script>
+</body>
+</html>

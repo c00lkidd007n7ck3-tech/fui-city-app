@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Market Map</string>
+    <string name="title_activity_main">Berisso Tactical Radar</string>
+    <string name="package_name">com.c00lkidd.fuicity</string>
+    <string name="custom_url_scheme">com.c00lkidd.fuicity</string>
+</resources>

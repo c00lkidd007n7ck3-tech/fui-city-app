@@ -1,0 +1,412 @@
+:root {
+    --phosphor: #ff0033;
+    --phosphor-soft: #ff4566;
+    --void: #030000;
+    --panel: rgba(8, 0, 2, 0.86);
+    --grid-faint: rgba(255, 0, 51, 0.055);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--void);
+    color: var(--phosphor-soft);
+    font-family: "Courier New", Courier, monospace;
+}
+
+/* Recolorización directa de toda la salida vectorial para visión nocturna FUI. */
+#map {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    filter: invert(1) hue-rotate(132deg) saturate(3.4) brightness(0.54) contrast(1.35);
+}
+
+/* Rejilla CRT, viñeta y línea móvil de barrido. */
+.radar-scan {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    background:
+        linear-gradient(rgba(255, 0, 51, 0) 50%, rgba(255, 0, 51, 0.075) 50%),
+        radial-gradient(circle at 50% 50%, transparent 45%, rgba(0, 0, 0, 0.72) 110%);
+    background-size: 100% 4px, 100% 100%;
+}
+
+.radar-scan::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 14vh;
+    background: linear-gradient(transparent, rgba(255, 0, 51, 0.13), transparent);
+    animation: crt-sweep 5s linear infinite;
+}
+
+.fui-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(12px, 2.2vw, 28px);
+    pointer-events: none;
+}
+
+/* Retícula central y telemetría periférica sin bloquear el mapa. */
+.fui-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 9%;
+    z-index: -2;
+    pointer-events: none;
+    opacity: 0.42;
+    background:
+        linear-gradient(var(--phosphor), var(--phosphor)) 50% 0 / 1px 18px no-repeat,
+        linear-gradient(var(--phosphor), var(--phosphor)) 50% 100% / 1px 18px no-repeat,
+        linear-gradient(90deg, var(--phosphor), var(--phosphor)) 0 50% / 18px 1px no-repeat,
+        linear-gradient(90deg, var(--phosphor), var(--phosphor)) 100% 50% / 18px 1px no-repeat;
+}
+
+.fui-header,
+.fui-panel,
+.fui-sidebar {
+    position: relative;
+    isolation: isolate;
+    pointer-events: auto;
+    --frame-fill: var(--panel);
+    background: transparent;
+    box-shadow:
+        inset 0 0 24px rgba(255, 0, 51, 0.16),
+        0 0 18px rgba(255, 0, 51, 0.38);
+    clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px));
+}
+
+/*
+ * Marco poligonal real: la capa roja exterior y la capa interior, desplazada
+ * un píxel, comparten la misma pendiente. A diferencia de border, ambas son
+ * recortadas por WebKit/Chromium y la diagonal queda continua en Linux.
+ */
+.fui-header::before,
+.fui-panel::before,
+.fui-sidebar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: #ff0033;
+    clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px));
+}
+
+.fui-header::after,
+.fui-panel::after,
+.fui-sidebar::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        linear-gradient(90deg, rgba(255, 0, 51, 0.12) 1px, transparent 1px) 0 0 / 34px 100%,
+        linear-gradient(rgba(255, 0, 51, 0.045) 1px, transparent 1px) 0 0 / 100% 5px,
+        var(--frame-fill);
+    clip-path: polygon(0 0, calc(100% - 27px) 0, 100% 27px, 100% 100%, 27px 100%, 0 calc(100% - 27px));
+}
+
+/* Panel HUD vertical de resultados del rastrillaje. */
+.fui-sidebar {
+    position: absolute;
+    top: clamp(100px, 15vh, 132px);
+    bottom: clamp(132px, 20vh, 180px);
+    left: clamp(12px, 2.2vw, 28px);
+    width: 280px;
+    overflow: hidden auto;
+    pointer-events: auto;
+    --frame-fill: rgba(6, 0, 0, 0.88);
+    background: transparent;
+    box-shadow: inset 0 0 20px rgba(255, 0, 51, 0.16), 0 0 18px rgba(255, 0, 51, 0.38);
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+    scrollbar-color: var(--phosphor) rgba(6, 0, 0, 0.88);
+    scrollbar-width: thin;
+}
+
+.fui-sidebar::before {
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+
+.fui-sidebar::after {
+    clip-path: polygon(0 0, calc(100% - 23px) 0, 100% 23px, 100% 100%, 17px 100%, 0 calc(100% - 17px));
+}
+
+.sidebar-heading {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--phosphor);
+    background: rgba(12, 0, 2, 0.98);
+    color: var(--phosphor);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 8px var(--phosphor);
+}
+
+.sidebar-heading::after {
+    content: "LIVE_FEED";
+    float: right;
+    color: #fff;
+    font-size: 0.58rem;
+    animation: blink 1.2s steps(2, end) infinite;
+}
+
+.fui-item-nodo {
+    position: relative;
+    padding: 10px;
+    padding-left: 24px;
+    border-bottom: 1px solid rgba(255, 0, 51, 0.28);
+    color: #ff3355;
+    font: 0.74rem/1.45 "Courier New", Courier, monospace;
+    letter-spacing: 0.035em;
+    cursor: pointer;
+    transition: color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.fui-item-nodo::before {
+    content: "◇";
+    position: absolute;
+    left: 8px;
+    color: #fff;
+    text-shadow: 0 0 7px var(--phosphor);
+}
+
+.fui-item-nodo:hover,
+.fui-item-nodo:focus-visible {
+    outline: none;
+    background: #ff0033;
+    color: #000;
+    box-shadow: inset 0 0 13px rgba(255, 255, 255, 0.35), 0 0 16px #ff0033;
+}
+
+.fui-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 16px 22px;
+}
+
+.eyebrow,
+.panel-heading,
+.system-state {
+    font-size: clamp(0.62rem, 1.2vw, 0.76rem);
+    letter-spacing: 0.16em;
+}
+
+.eyebrow {
+    margin-bottom: 5px;
+    opacity: 0.68;
+}
+
+h1 {
+    color: var(--phosphor);
+    font-size: clamp(0.95rem, 2.5vw, 1.55rem);
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 10px rgba(255, 0, 51, 0.75);
+}
+
+.system-state {
+    min-width: max-content;
+    text-align: right;
+    line-height: 1.7;
+}
+
+.blink {
+    color: var(--phosphor);
+    font-weight: 700;
+    animation: blink 0.9s steps(2, end) infinite;
+}
+
+.fui-panel {
+    width: min(760px, 100%);
+    align-self: center;
+    padding: 15px 20px 20px;
+}
+
+.panel-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 13px;
+    color: var(--phosphor);
+}
+
+.fui-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.fui-buttons button {
+    min-height: 48px;
+    padding: 10px 14px;
+    border: 1px solid var(--phosphor);
+    background: transparent;
+    color: var(--phosphor-soft);
+    font: 700 0.78rem/1 "Courier New", monospace;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    transition: color 180ms ease, background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.fui-buttons button span {
+    margin-right: 6px;
+    opacity: 0.55;
+}
+
+.fui-buttons button:hover,
+.fui-buttons button:focus-visible,
+.fui-buttons button.is-active {
+    outline: none;
+    background: var(--phosphor);
+    color: #000;
+    box-shadow: 0 0 9px var(--phosphor), 0 0 24px rgba(255, 0, 51, 0.85);
+    transform: translateY(-2px);
+}
+
+.fui-buttons button.is-active::after {
+    content: " // LOCK";
+    font-size: 0.6rem;
+    letter-spacing: 0;
+}
+
+/* Anillo holográfico utilizado por los Marker de MapLibre. */
+.tactical-marker {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--phosphor);
+    border-radius: 50%;
+    background: rgba(255, 0, 51, 0.18);
+    box-shadow: 0 0 7px var(--phosphor), 0 0 19px var(--phosphor), inset 0 0 8px var(--phosphor);
+    cursor: pointer;
+    transform-style: preserve-3d;
+    /* El nodo permanece estable; el neón es fijo y no altera su geometría. */
+    animation: none;
+}
+
+.tactical-marker::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border: 1px solid rgba(255, 0, 51, 0.75);
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(255, 0, 51, 0.7);
+}
+
+.tactical-marker::after {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 8px #fff;
+}
+
+/* Popup táctico: se usan selectores propios de MapLibre para reemplazar su tema. */
+.maplibregl-popup-content {
+    min-width: 220px;
+    padding: 14px 17px !important;
+    border: 1px solid var(--phosphor);
+    border-radius: 0 !important;
+    background: rgba(5, 0, 1, 0.96) !important;
+    color: var(--phosphor-soft);
+    box-shadow: 0 0 17px rgba(255, 0, 51, 0.7) !important;
+    font: 0.76rem/1.55 "Courier New", monospace;
+}
+
+.maplibregl-popup-tip {
+    border-top-color: var(--phosphor) !important;
+}
+
+.maplibregl-popup-close-button {
+    color: var(--phosphor);
+    font-size: 20px;
+}
+
+.popup-id {
+    color: #fff;
+}
+
+.popup-name {
+    color: var(--phosphor);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+@keyframes blink {
+    0%, 18% { opacity: 0.35; }
+    19%, 100% { opacity: 1; text-shadow: 0 0 9px var(--phosphor); }
+}
+
+@keyframes crt-sweep {
+    from { top: -15vh; }
+    to { top: 105vh; }
+}
+
+@keyframes target-lock {
+    0%, 100% { box-shadow: 0 0 6px var(--phosphor), 0 0 14px rgba(255, 0, 51, 0.7), inset 0 0 8px var(--phosphor); }
+    50% { box-shadow: 0 0 10px #fff, 0 0 26px var(--phosphor), inset 0 0 12px var(--phosphor); }
+}
+
+@media (max-width: 620px) {
+    .fui-header {
+        align-items: flex-start;
+        padding: 13px 15px;
+    }
+
+    .eyebrow,
+    .panel-heading span:last-child {
+        display: none;
+    }
+
+    .fui-panel {
+        padding: 13px;
+    }
+
+    .fui-sidebar {
+        top: 92px;
+        bottom: 207px;
+        left: 12px;
+        width: min(280px, calc(100vw - 24px));
+        max-height: 31vh;
+    }
+
+    .fui-buttons {
+        grid-template-columns: 1fr;
+        gap: 7px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .radar-scan::after,
+    .blink,
+    .tactical-marker {
+        animation: none;
+    }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "fui-city-app",
+  "version": "1.0.0",
+  "description": "Berisso Tactical Radar FUI",
+  "main": "www/app.js",
+  "scripts": {
+    "build": "echo 'Build complete'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0"
+  }
+}
