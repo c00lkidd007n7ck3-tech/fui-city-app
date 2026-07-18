@@ -1,25 +1,50 @@
-// Usamos un estilo libre open-source que renderiza perfectamente en 3D
+// 1. Configuramos el mapa base vectorial con inclinación 3D (pitch)
+// Nota: Las coordenadas están en Buenos Aires. Modificá el "center" si querés tu ciudad.
 const map = new maplibregl.Map({
     container: 'map',
     style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
-    center: [-58.3816, -34.6037], // Buenos Aires (Cambialo por tu ciudad)
+    center: [-58.3816, -34.6037],
     zoom: 14.5,
-    pitch: 60,       // Grados de inclinación de la cámara para ver en perspectiva 3D
-    bearing: -20,    // Rotación del mapa con respecto al norte
+    pitch: 60,       // Ángulo de inclinación oblicuo
+    bearing: -20,    // Rotación inicial
     zoomControl: false
 });
 
-// Hacemos que el mapa rote lentamente de fondo de forma continua tipo radar militar
+let rotacionActiva = true;
+let temporizadorRetorno;
+
+// Bucle de rotación autónoma (Efecto Radar)
 function animarRadar() {
-    map.rotateTo((map.getBearing() + 0.05) % 360, { duration: 0 });
-    requestAnimationFrame(animarRadar);
+    if (rotacionActiva) {
+        map.rotateTo((map.getBearing() + 0.04) % 360, { duration: 0 });
+        requestAnimationFrame(animarRadar);
+    }
 }
 
 map.on('load', () => {
     animarRadar();
 });
 
-// Puntos de datos espaciales tácticos
+// Interrupción inteligente de animación al interactuar
+function pausarEscaner() {
+    rotacionActiva = false;
+    clearTimeout(temporizadorRetorno);
+
+    // Si pasan 5 segundos sin tocar el mapa, vuelve a rotar automáticamente
+    temporizadorRetorno = setTimeout(() => {
+        if (!rotacionActiva) {
+            rotacionActiva = true;
+            animarRadar();
+        }
+    }, 5000);
+}
+
+// Escuchas de eventos para pausar (Mouse, teclado y pantallas táctiles de móviles)
+map.on('movestart', pausarEscaner);
+map.on('touchstart', pausarEscaner);
+
+
+// 2. Base de datos simulada de los rubros comerciales
 const nodosUrbanos = [
     { rubro: 'gastronomia', nombre: 'FUEL_NODE_G01', coords: [-58.3830, -34.6050] },
     { rubro: 'salud', nombre: 'MED_BAY_ALPHA', coords: [-58.3800, -34.6020] },
@@ -28,15 +53,16 @@ const nodosUrbanos = [
 
 let marcadoresActuales = [];
 
+// Función encargada de renderizar los nodos en el espacio 3D
 function filtrar(rubroSeleccionado) {
-    // Borrar nodos anteriores
+    // Limpiamos los anteriores del mapa
     marcadoresActuales.forEach(m => m.remove());
     marcadoresActuales = [];
 
     nodosUrbanos.forEach(nodo => {
         if (nodo.rubro === rubroSeleccionado) {
 
-            // Creamos un elemento HTML personalizado en 3D (un anillo holográfico)
+            // Diseñamos un anillo luminoso customizado mediante código
             const el = document.createElement('div');
             el.style.width = '20px';
             el.style.height = '20px';
@@ -44,12 +70,11 @@ function filtrar(rubroSeleccionado) {
             el.style.borderRadius = '50%';
             el.style.backgroundColor = '#ff0033';
             el.style.boxShadow = '0 0 12px #ff0033, inset 0 0 8px #ff0033';
-            el.style.animation = 'blink 0.8s infinite alternate';
 
-            // Lo colocamos sobre las coordenadas en el plano interactivo 3D
+            // Fijamos el marcador tridimensional sobre la cartografía
             const marcador = new maplibregl.Marker({ element: el })
                 .setLngLat(nodo.coords)
-                .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(`<p style="color:#000; font-family:monospace;"><b>[${nodo.nombre}]</b></p>`))
+                .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(`<p style="color:#000; font-family:monospace; margin:3px;"><b>[${nodo.nombre}]</b></p>`))
                 .addTo(map);
 
             marcadoresActuales.push(marcador);

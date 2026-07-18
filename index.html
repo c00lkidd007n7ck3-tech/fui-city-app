@@ -11,17 +11,20 @@
 </head>
 <body>
 
-    <!-- El canvas del radar 3D -->
+    <!-- Contenedor del mapa en 3D -->
     <div id="map"></div>
+
+    <!-- Líneas de escaneo estéticas de radar -->
     <div class="radar-scan"></div>
 
-    <!-- Interfaz Holográfica FUI -->
+    <!-- Interfaz Holográfica FUI Superpuesta -->
     <div class="fui-overlay">
         <header class="fui-header">
             <div class="fui-title">TACTICAL_RADAR_v3.0.4</div>
-            <div class="fui-status">ANG_PITCH: <span id="pitch-val">60°</span> | <span class="pulse">SCAN_ACTIVE</span></div>
+            <div class="fui-status">ANG_PITCH: 60° | <span class="pulse">SCAN_ACTIVE</span></div>
         </header>
 
+        <!-- Panel Inferior de Control de Rubros -->
         <main class="fui-panel">
             <h3>[ FILTRAR_NODOS_URBANOS ]</h3>
             <div class="fui-buttons">
@@ -32,7 +35,7 @@
         </main>
     </div>
 
-    <!-- Script de MapLibre GL -->
+    <!-- Scripts de Ejecución -->
     <script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
     <script src="app.js"></script>
 </body>
